@@ -6,6 +6,7 @@ WORKDIR /workspace
 COPY gradlew gradlew
 COPY gradle gradle
 COPY build.gradle settings.gradle ./
+
 # 소스는 마지막에 복사 (캐시 활용)
 RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 

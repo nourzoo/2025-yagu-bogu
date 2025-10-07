@@ -46,10 +46,8 @@ jobs:
           TAG_LATEST="dev-latest"
           # Dockerfile 경로: backend/Dockerfile
           docker buildx build \
-          --cache-to=type=gha,mode=max \
-          --cache-from=type=gha \
-          --cache-to=type=registry,ref=$IMAGE:build-cache,mode=max \
-          --cache-from=type=registry,ref=$IMAGE:build-cache \
+          --progress=plain \
+          --cache-from=type=gha --cache-to=type=gha,mode=max \
           -f Dockerfile \
           --platform linux/arm64 \
           -t $IMAGE:$TAG_LATEST \
