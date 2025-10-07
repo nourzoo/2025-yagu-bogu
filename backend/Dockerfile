@@ -14,7 +14,7 @@ RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 # 🔥 Gradle 캐시 마운트 (wrapper / caches 분리 권장)
 RUN --mount=type=cache,target=/root/.gradle/wrapper \
     --mount=type=cache,target=/root/.gradle/caches \
-    ./gradlew --no-daemon -v
+    ./gradlew --no-daemon dependencies --stacktrace --info
 
 COPY src src
 
