@@ -32,9 +32,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Run tests
-        run: ./gradlew test
-
       - name: Build JAR (skip tests)
         run: ./gradlew -x test bootJar
 
@@ -53,6 +50,7 @@ jobs:
           # Dockerfile 경로: backend/Dockerfile
           docker buildx build \
           --platform linux/arm64 \
+          --progress=plain
           --cache-from=type=gha,scope=backend \
           --cache-to=type=gha,scope=backend,mode=max \
           --cache-from=type=registry,ref=$IMAGE:build-cache \

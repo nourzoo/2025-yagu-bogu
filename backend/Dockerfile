@@ -5,9 +5,7 @@ WORKDIR /workspace
 # Gradle 캐시 최적화: wrapper/gradle 관련 파일을 먼저 복사
 COPY gradlew gradlew
 COPY gradle gradle
-COPY build.gradle settings.gradle ./
-COPY build.gradle settings.gradle gradle.properties ./
-
+COPY build.gradle settings.gradle gradle.properties* ./
 # 소스는 마지막에 복사 (캐시 활용)
 RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 
@@ -23,18 +21,20 @@ RUN --mount=type=cache,target=/root/.gradle/wrapper \
     --mount=type=cache,target=/root/.gradle/caches \
     ./gradlew --no-daemon -x test bootJar
 
-# --- Run stage ---
-FROM amazoncorretto:21-alpine
 
-# 환경 변수 설정
-# Dockerfile에는 JVM 옵션, 프로필 정도만 기본값으로
+# --- Run stage ---
+FROM amazoncorretto:21-alpine AS runtime
+WORKDIR /app
 ENV TZ=Asia/Seoul
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+UseG1GC"
 
-WORKDIR /app
+# ---- 최종 이미지 1: 도커-내부 빌드 사용 ----
+FROM runtime AS image-from-build
+COPY --from=build /workspace/build/libs/*.jar /app/app.jar
+ENTRYPOINT ["java","-jar","/app/app.jar"]
 
-# 빌드 결과 복사
-COPY --from=build /workspace/build/libs/*SNAPSHOT.jar /app/app.jar
-
-# 실행
-ENTRYPOINT ["sh","-c","java $JAVA_OPTS -jar /app/app.jar"]
+# ---- 최종 이미지 2: 외부(JAR) 포장 전용 ----
+FROM runtime AS image-from-jar
+# CI에서 ./gradlew -x test bootJar 로 만든 산출물을 사용
+COPY build/libs/*.jar /app/app.jar
+ENTRYPOINT ["java","-jar","/app/app.jar"]
