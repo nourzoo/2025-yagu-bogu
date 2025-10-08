@@ -55,7 +55,7 @@ jobs:
           --cache-to=type=gha,scope=backend,mode=max \
           --cache-from=type=registry,ref=$IMAGE:build-cache \
           --cache-to=type=registry,ref=$IMAGE:build-cache,mode=min \
-          -f Dockerfile \ 
+          -f Dockerfile \
           -t $IMAGE:$TAG_LATEST \
           --push \
           .
