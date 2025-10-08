@@ -65,8 +65,6 @@ jobs:
           # Dockerfile 경로: backend/Dockerfile
           docker buildx build \
             -f Dockerfile \
-            --cache-from=type=registry,ref=$IMAGE:build-cache \
-            --cache-to=type=registry,ref=$IMAGE:build-cache,mode=min \
             --platform linux/arm64 \
             -t $IMAGE:$TAG_LATEST \
             --push \
