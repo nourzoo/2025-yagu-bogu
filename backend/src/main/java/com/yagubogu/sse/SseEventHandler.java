@@ -29,7 +29,7 @@ public class SseEventHandler {
         sseEmitterRegistry.all().forEach(emitter -> {
             try {
                 emitter.send(SseEmitter.event()
-                        .name("check-in-created")
+                        .name("check-in-created ")
                         .data(eventData));
             } catch (IOException e) {
                 sseEmitterRegistry.removeWithError(emitter, e);
