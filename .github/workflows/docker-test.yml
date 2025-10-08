@@ -12,7 +12,7 @@ env:
 
 jobs:
   ci:
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -44,18 +44,30 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEPLOY_USERNAME }}
           password: ${{ secrets.DOCKERHUB_DEPLOY_TOKEN }}
 
-      - name: Docker Image Build & Push (arm64-arch)
+      #      - name: Docker Image Build & Push (arm64-arch)
+      #        run: |
+      #          TAG_LATEST="dev-latest"
+      #          # Dockerfile 경로: backend/Dockerfile
+      #          docker buildx build \
+      #          --platform linux/arm64 \
+      #          --progress=plain \
+      #          --cache-from=type=gha,scope=backend \
+      #          --cache-to=type=gha,scope=backend,mode=max \
+      #          --cache-from=type=registry,ref=$IMAGE:build-cache \
+      #          --cache-to=type=registry,ref=$IMAGE:build-cache,mode=min \
+      #          -f Dockerfile \
+      #          -t $IMAGE:$TAG_LATEST \
+      #          --push \
+      #          .
+      - name: Docker Image Build & Push (multi-arch)
         run: |
           TAG_LATEST="dev-latest"
           # Dockerfile 경로: backend/Dockerfile
           docker buildx build \
-          --platform linux/arm64 \
-          --progress=plain \
-          --cache-from=type=gha,scope=backend \
-          --cache-to=type=gha,scope=backend,mode=max \
-          --cache-from=type=registry,ref=$IMAGE:build-cache \
-          --cache-to=type=registry,ref=$IMAGE:build-cache,mode=min \
-          -f Dockerfile \
-          -t $IMAGE:$TAG_LATEST \
-          --push \
-          .
+            -f Dockerfile \
+            --cache-from=type=registry,ref=$IMAGE:build-cache \
+            --cache-to=type=registry,ref=$IMAGE:build-cache,mode=min \
+            --platform linux/arm64 \
+            -t $IMAGE:$TAG_LATEST \
+            --push \
+            .
