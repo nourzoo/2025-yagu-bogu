@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE: yagubogu/yagubogu-backend
+  IMAGE: nourzoo/yagubogu-backend
 
 jobs:
   ci:
@@ -62,7 +62,7 @@ jobs:
     needs: ci
     runs-on: [ self-hosted, develop ]
     env:
-      IMAGE: yagubogu/yagubogu-backend
+      IMAGE: nourzoo/yagubogu-backend
       TAG: "dev-latest"
     steps:
       - name: Login to Docker Hub
