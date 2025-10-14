@@ -8,13 +8,14 @@ COPY gradle gradle
 COPY build.gradle settings.gradle ./
 # 소스는 마지막에 복사 (캐시 활용)
 RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
+RUN --mount=type=cache,target=/root/.gradle,id=gradle-cache \
+    ./gradlew --no-daemon dependencies || true
+
 COPY src src
 
-# Gradle 8.14.3 보장 (wrapper 버전 확인)
-# RUN ./gradlew wrapper --gradle-version 8.14.3 --no-daemon
-
-# 빌드
-RUN ./gradlew clean bootJar --no-daemon
+# 4) 실제 빌드도 같은 캐시를 재사용
+RUN --mount=type=cache,target=/root/.gradle,id=gradle-cache \
+    ./gradlew --no-daemon --build-cache bootJar -x test
 
 # --- Run stage ---
 FROM amazoncorretto:21-alpine
