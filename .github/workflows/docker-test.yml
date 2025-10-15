@@ -10,6 +10,7 @@ on:
 
 env:
   IMAGE: nourzoo/yagubogu-backend
+  TAG_LATEST: dev-latest
 
 jobs:
   ci:
@@ -48,12 +49,10 @@ jobs:
       - name: Docker Image Build & Push (arm64-arch)
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
           platforms: linux/arm64
-          tags: ${{ env.IMAGE }}:dev-latest
-
-          # 🔹 원격 레이어 캐시 설정 (registry 기반)
+          tags: ${{ env.IMAGE }}:${{ env.TAG_LATEST }}
           cache-from: type=registry,ref=${{ env.IMAGE }}:build-cache
           cache-to: type=registry,ref=${{ env.IMAGE }}:build-cache,mode=max
