@@ -46,13 +46,19 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEPLOY_USERNAME }}
           password: ${{ secrets.DOCKERHUB_DEPLOY_TOKEN }}
 
+      - run: |
+          echo "PWD=$(pwd)"
+          ls -al .
+
       - name: Docker Image Build & Push (arm64-arch)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: true
-          platforms: linux/arm64
-          tags: ${{ env.IMAGE }}:${{ env.TAG_LATEST }}
-          cache-from: type=registry,ref=${{ env.IMAGE }}:build-cache
-          cache-to: type=registry,ref=${{ env.IMAGE }}:build-cache,mode=max
+        run: |
+          TAG_LATEST="dev-latest"
+          # Dockerfile 경로: backend/Dockerfile
+          docker buildx build \
+          --cache-to=type=registry,ref=$IMAGE:build-cache,mode=max \
+          --cache-from=type=registry,ref=$IMAGE:build-cache \
+          -f Dockerfile \
+          --platform linux/arm64 \
+          -t $IMAGE:$TAG_LATEST \
+          --push \
+          .
