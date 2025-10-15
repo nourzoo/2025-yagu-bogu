@@ -47,6 +47,8 @@ jobs:
     permissions:
       contents: read
     steps:
+      - uses: actions/checkout@v4   # ✅ 이게 있어야 ./backend 가 생김
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -59,12 +61,11 @@ jobs:
       - name: Docker Image Build & Push (arm64-arch)
         run: |
           TAG_LATEST="dev-latest"
-          # Dockerfile 경로: backend/Dockerfile
           docker buildx build \
-          --cache-to=type=registry,ref=$IMAGE:build-cache,mode=max \
-          --cache-from=type=registry,ref=$IMAGE:build-cache \
-          -f Dockerfile \
-          --platform linux/arm64 \
-          -t $IMAGE:$TAG_LATEST \
-          --push \
-          .
+            --cache-to=type=registry,ref=${IMAGE}:build-cache,mode=max \
+            --cache-from=type=registry,ref=${IMAGE}:build-cache \
+            -f Dockerfile \
+            --platform linux/arm64 \
+            -t ${IMAGE}:$TAG_LATEST \
+            --push \
+            .
