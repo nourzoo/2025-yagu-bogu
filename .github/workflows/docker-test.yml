@@ -46,14 +46,14 @@ jobs:
           password: ${{ secrets.DOCKERHUB_DEPLOY_TOKEN }}
 
       - name: Docker Image Build & Push (arm64-arch)
-        run: |
-          TAG_LATEST="dev-latest"
-          # Dockerfile 경로: backend/Dockerfile
-          docker buildx build \
-          --cache-to=type=registry,ref=$IMAGE:build-cache,mode=max \
-          --cache-from=type=registry,ref=$IMAGE:build-cache \
-          -f Dockerfile \
-          --platform linux/arm64 \
-          -t $IMAGE:$TAG_LATEST \
-          --push \
-          .
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: ${{ env.IMAGE }}:dev-latest
+
+          # 🔹 원격 레이어 캐시 설정 (registry 기반)
+          cache-from: type=registry,ref=${{ env.IMAGE }}:build-cache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:build-cache,mode=max
